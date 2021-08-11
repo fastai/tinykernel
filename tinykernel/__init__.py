@@ -12,7 +12,7 @@ class TinyKernel:
     def _run(self, p, nm, mode='exec'): return eval(compiler(p, nm, mode), self.glb)
 
     def __call__(self, code):
-        nm = compiler.cache(code, self.idx)
+        nm = compiler.cache(code, self.idx, prefix=self.name)
         self.idx += 1
         p = parse(code, filename=nm) if not isinstance(code, Module) else code
         expr = p.body.pop() if p.body and isinstance(p.body[-1], Expr) else None

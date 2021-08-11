@@ -59,7 +59,7 @@ Multi-line inputs are supported. If the last line is an expression, it is return
 
 ```python
 k("""import types
-b = SimpleNamespace(foo=a)
+b = types.SimpleNamespace(foo=a)
 b""")
 ```
 
@@ -83,6 +83,46 @@ inspect.getsource(f)""")
 
     'def f(): pass # a comment\n'
 
+
+
+When creating a `TinyKernel`, you can pass a dict of globals to initialize the environment:
+
+```python
+k = TinyKernel(glb={'foo':'bar'})
+k('foo*2')
+```
+
+
+
+
+    'barbar'
+
+
+
+Pass `name` to customize the string that appears in tracebacks ("kernel" by default):
+
+```python
+k = TinyKernel(name='myapp')
+code = '''def f():
+    return 1/0
+print(f())'''
+try: k(code)
+except Exception as e: print(traceback.format_exc())
+```
+
+    Traceback (most recent call last):
+      File "<ipython-input-37-8b370e64c5cb>", line 5, in <module>
+        try: k(code)
+      File "/home/jhoward/git/tinykernel/tinykernel/__init__.py", line 20, in __call__
+        if expr: return self._run(Expression(expr.value), nm, 'eval')
+      File "/home/jhoward/git/tinykernel/tinykernel/__init__.py", line 12, in _run
+        def _run(self, p, nm, mode='exec'): return eval(compiler(p, nm, mode), self.glb)
+      File "<myapp--1-57331cf14e08>", line 3, in <module>
+        print(f())
+      File "<myapp--1-57331cf14e08>", line 2, in f
+        return 1/0
+    ZeroDivisionError: division by zero
+    
 
 
 ## Acknowledgements
