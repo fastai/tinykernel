@@ -8,8 +8,12 @@ compiler = CachingCompiler()
 
 class TinyKernel:
     "A tiny persistent kernel for Python code"
-    def __init__(self, name='kernel', glb=None): self.name,self.idx,self.glb = name,-1,glb or {}
-    def _run(self, p, nm, mode='exec'): return eval(compiler(p, nm, mode), self.glb)
+    def __init__(self, name='kernel', glb=None):
+        self.glb = {'__name__':'tinykernel', '__package__':__package__}
+        self.name,self.idx,self.glb = name,-1,glb or {'__name__':'tinykernel'}
+
+    def _run(self, p, nm, mode='exec'):
+        return eval(compiler(p, nm, mode), self.glb)
 
     def __call__(self, code):
         nm = compiler.cache(code, self.idx, prefix=self.name)
